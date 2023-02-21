@@ -69,6 +69,21 @@ def cpu_stats():
     return dict_result
 
 
+def cpu_freq(eachcore=True):
+    result = psutil.cpu_freq(percpu=eachcore)
+
+    if eachcore:
+        dict_result = {}
+
+        for core_number, core_freq in enumerate(result):
+            dict_result[f'Core {core_number}'] = dict(core_freq._asdict())
+
+    else:
+        dict_result = dict(result._asdict())
+
+    return dict_result
+
+
 if __name__ == '__main__':
     #print(vm_detect())
     #print(virtual_memory())
@@ -76,4 +91,5 @@ if __name__ == '__main__':
     #print(cpu_times())
     #print(cpu_percent())
     #print(cpu_count())
-    print(cpu_stats())
+    #print(cpu_stats())
+    print(cpu_freq())
