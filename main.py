@@ -62,10 +62,18 @@ def cpu_count():
     return dict_result
 
 
+def cpu_stats():
+    result = psutil.cpu_stats()
+    dict_result = dict(result._asdict())
+
+    return dict_result
+
+
 if __name__ == '__main__':
     #print(vm_detect())
     #print(virtual_memory())
     #print(swap_memory())
     #print(cpu_times())
     #print(cpu_percent())
-    print(cpu_count())
+    #print(cpu_count())
+    print(cpu_stats())
