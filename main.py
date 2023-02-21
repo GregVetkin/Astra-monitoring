@@ -20,6 +20,14 @@ def virtual_memory():
     return dict_result
 
 
+def swap_memory():
+    result = psutil.swap_memory()
+    dict_result = dict(result._asdict())
+
+    return dict_result
+
+
 if __name__ == '__main__':
     #print(vm_detect())
-    print(virtual_memory())
+    #print(virtual_memory())
+    print(swap_memory())
