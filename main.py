@@ -1,3 +1,4 @@
+import psutil
 import subprocess
 
 
@@ -12,5 +13,13 @@ def vm_detect():
         return False
 
 
+def virtual_memory():
+    result = psutil.virtual_memory()
+    dict_result = dict(result._asdict())
+
+    return dict_result
+
+
 if __name__ == '__main__':
-    print(vm_detect())
+    #print(vm_detect())
+    print(virtual_memory())
