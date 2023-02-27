@@ -135,6 +135,49 @@ def net_io_counters():
     return dict_result
 
 
+def processes_info():
+    pids = psutil.pids()
+    result_dict = {}
+
+    for process in psutil.process_iter():
+        try:
+            process_data = {}
+            with process.oneshot():
+                pid = process.pid
+                process_data['name'] = process.name()
+                process_data['username'] = process.username()
+                process_data['status'] = process.status()
+                process_data['memory_info'] = dict(process.memory_info()._asdict())
+                process_data['cpu_times'] = dict(process.cpu_times()._asdict())
+                process_data['cpu_percent'] = process.cpu_percent(interval=0)
+                process_data['connections'] = {}
+
+                connections = process.connections(kind='all')
+                for connection_number, connection in enumerate(connections):
+                    process_data['connections'][connection_number] = {}
+                    process_data['connections'][connection_number]['fd'] = connection.fd
+                    process_data['connections'][connection_number]['family'] = connection.family
+                    process_data['connections'][connection_number]['type'] = connection.type
+                    process_data['connections'][connection_number]['laddr'] = {}
+                    process_data['connections'][connection_number]['laddr']['ip'] = connection.laddr.ip
+                    process_data['connections'][connection_number]['laddr']['port'] = connection.laddr.port
+                    if connection.raddr:
+                        process_data['connections'][connection_number]['raddr'] = {}
+                        process_data['connections'][connection_number]['raddr']['ip'] = connection.raddr.ip
+                        process_data['connections'][connection_number]['raddr']['port'] = connection.raddr.port
+                    process_data['connections'][connection_number]['status'] = connection.status
+
+            result_dict[pid] = process_data
+
+        except psutil.NoSuchProcess:
+            pass
+
+        except psutil.AccessDenied:
+            pass
+
+    return result_dict
+
+
 if __name__ == '__main__':
     #print(vm_detect())
     #print(virtual_memory())
@@ -145,4 +188,12 @@ if __name__ == '__main__':
     #print(cpu_stats())
     #print(cpu_freq())
     #print(disks_info())
-    print(net_io_counters())
+    #print(net_io_counters())
+    proc = processes_info()
+    import json
+    with open('procs.json', 'w') as file:
+        json.dump(proc, file, indent=6)
+
+    p = psutil.Process(4)
+    print(p.connections())
+    #print(processes_info())
