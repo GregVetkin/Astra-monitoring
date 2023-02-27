@@ -136,7 +136,6 @@ def net_io_counters():
 
 
 def processes_info():
-    pids = psutil.pids()
     result_dict = {}
 
     for process in psutil.process_iter():
@@ -158,14 +157,15 @@ def processes_info():
                     process_data['connections'][connection_number]['fd'] = connection.fd
                     process_data['connections'][connection_number]['family'] = connection.family
                     process_data['connections'][connection_number]['type'] = connection.type
-                    process_data['connections'][connection_number]['laddr'] = {}
-                    process_data['connections'][connection_number]['laddr']['ip'] = connection.laddr.ip
-                    process_data['connections'][connection_number]['laddr']['port'] = connection.laddr.port
-                    if connection.raddr:
-                        process_data['connections'][connection_number]['raddr'] = {}
-                        process_data['connections'][connection_number]['raddr']['ip'] = connection.raddr.ip
-                        process_data['connections'][connection_number]['raddr']['port'] = connection.raddr.port
+                    process_data['connections'][connection_number]['laddr'] = ''
+                    process_data['connections'][connection_number]['raddr'] = ''
                     process_data['connections'][connection_number]['status'] = connection.status
+
+                    if connection.laddr:
+                        process_data['connections'][connection_number]['laddr'] = connection.laddr
+
+                    if connection.raddr:
+                        process_data['connections'][connection_number]['raddr'] = connection.raddr
 
             result_dict[pid] = process_data
 
@@ -193,7 +193,4 @@ if __name__ == '__main__':
     import json
     with open('procs.json', 'w') as file:
         json.dump(proc, file, indent=6)
-
-    p = psutil.Process(4)
-    print(p.connections())
     #print(processes_info())
