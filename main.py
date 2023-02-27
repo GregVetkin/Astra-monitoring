@@ -87,20 +87,9 @@ def cpu_freq(eachcore=True):
 def disks_info():
     dict_result = {}
     disks = psutil.disk_partitions(all=False)
-    disks_io_counters = psutil.disk_io_counters(perdisk=True, nowrap=True)
-
-    for disk_io in disks_io_counters:
-        if 'sda' in disk_io:
-            print(disks_io_counters[disk_io])
 
     for disk_number, disk in enumerate(disks):
-        dict_result[f'Disk {disk_number}'] = {}
-        dict_result[f'Disk {disk_number}']['device'] = disk.device
-        dict_result[f'Disk {disk_number}']['mountpoint'] = disk.mountpoint
-        dict_result[f'Disk {disk_number}']['fstype'] = disk.fstype
-        dict_result[f'Disk {disk_number}']['opts'] = disk.opts
-        dict_result[f'Disk {disk_number}']['maxfile'] = disk.maxfile
-        dict_result[f'Disk {disk_number}']['maxpath'] = disk.maxpath
+        dict_result[f'Disk {disk_number}'] = dict(disk._asdict())
 
         if 'rw' in disk.opts:
             disk_usage = psutil.disk_usage(disk.mountpoint)
@@ -110,10 +99,10 @@ def disks_info():
             dict_result[f'Disk {disk_number}']['percent'] = disk_usage.percent
 
         else:
-            dict_result[f'Disk {disk_number}']['total'] = None
-            dict_result[f'Disk {disk_number}']['used'] = None
-            dict_result[f'Disk {disk_number}']['free'] = None
-            dict_result[f'Disk {disk_number}']['percent'] = None
+            dict_result[f'Disk {disk_number}']['total'] = 0
+            dict_result[f'Disk {disk_number}']['used'] = 0
+            dict_result[f'Disk {disk_number}']['free'] = 0
+            dict_result[f'Disk {disk_number}']['percent'] = 0
 
     return dict_result
 
@@ -179,18 +168,19 @@ def processes_info():
 
 
 if __name__ == '__main__':
-    #print(vm_detect())
-    #print(virtual_memory())
-    #print(swap_memory())
-    #print(cpu_times())
-    #print(cpu_percent())
-    #print(cpu_count())
-    #print(cpu_stats())
-    #print(cpu_freq())
-    #print(disks_info())
-    #print(net_io_counters())
-    proc = processes_info()
+    all_data = {}
+    all_data['vm_detect'] = vm_detect()
+    all_data['virtual_memory'] = virtual_memory()
+    all_data['swap_memory'] = swap_memory()
+    all_data['cpu_times'] = cpu_times()
+    all_data['cpu_percent'] = cpu_percent()
+    all_data['cpu_count'] = cpu_count()
+    all_data['cpu_stats'] = cpu_stats()
+    all_data['cpu_freq'] = cpu_freq()
+    all_data['disks_info'] = disks_info()
+    all_data['net_io_counters'] = net_io_counters()
+    all_data['processes_info'] = processes_info()
+
     import json
-    with open('procs.json', 'w') as file:
-        json.dump(proc, file, indent=6)
-    #print(processes_info())
+    with open('all.json', 'w') as file:
+        json.dump(all_data, file, indent=6)
