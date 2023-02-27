@@ -107,6 +107,16 @@ def disks_info():
     return dict_result
 
 
+def disks_io():
+    dict_result = {}
+    partitions_io = psutil.disk_io_counters(perdisk=True, nowrap=True)
+
+    for disk in partitions_io:
+        dict_result[disk] = dict(partitions_io[disk]._asdict())
+
+    return dict_result
+
+
 def net_io_counters():
     result = psutil.net_io_counters(pernic=True, nowrap=True)
     dict_result = {}
@@ -178,6 +188,7 @@ if __name__ == '__main__':
     all_data['cpu_stats'] = cpu_stats()
     all_data['cpu_freq'] = cpu_freq()
     all_data['disks_info'] = disks_info()
+    all_data['disks_io'] = disks_io()
     all_data['net_io_counters'] = net_io_counters()
     all_data['processes_info'] = processes_info()
 
