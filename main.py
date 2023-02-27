@@ -118,6 +118,23 @@ def disks_info():
     return dict_result
 
 
+def net_io_counters():
+    result = psutil.net_io_counters(pernic=True, nowrap=True)
+    dict_result = {}
+    for interface in result:
+        dict_result[interface] = {}
+        dict_result[interface]['bytes_sent'] = result[interface].bytes_sent
+        dict_result[interface]['bytes_recv'] = result[interface].bytes_recv
+        dict_result[interface]['packets_sent'] = result[interface].packets_sent
+        dict_result[interface]['packets_recv'] = result[interface].packets_recv
+        dict_result[interface]['errin'] = result[interface].errin
+        dict_result[interface]['errout'] = result[interface].errout
+        dict_result[interface]['dropin'] = result[interface].dropin
+        dict_result[interface]['dropout'] = result[interface].dropout
+
+    return dict_result
+
+
 if __name__ == '__main__':
     #print(vm_detect())
     #print(virtual_memory())
@@ -127,4 +144,5 @@ if __name__ == '__main__':
     #print(cpu_count())
     #print(cpu_stats())
     #print(cpu_freq())
-    print(disks_info())
+    #print(disks_info())
+    print(net_io_counters())
