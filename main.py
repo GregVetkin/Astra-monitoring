@@ -1,23 +1,32 @@
 import os
 import sys
+import time
 import psutil
+import datetime
 import subprocess
 import hashlib
 import netifaces
-import datetime
 import multiprocessing
 
 
-class Virtual:
+class OperatingSystem:
 
     @staticmethod
-    def vm_detect() -> bool:
+    def vm_detect():
         command = 'sudo systemd-detect-virt'
         process = subprocess.Popen([command], shell=True, stdout=subprocess.PIPE).wait()
         if process == 0:
             return True
         else:
             return False
+
+    @staticmethod
+    def system_time():
+        return time.time()
+
+    @staticmethod
+    def unix_time_to_str(timestamp, timeformat='%Y-%m-%d %H:%M:%S'):
+        return datetime.datetime.fromtimestamp(timestamp).strftime(timeformat)
 
 
 class Memory:
@@ -196,7 +205,7 @@ class File:
 
 if __name__ == '__main__':
 
-    all_data = {'vm_detect': Virtual.vm_detect(),
+    all_data = {'vm_detect': OperatingSystem.vm_detect(),
                 'virtual_memory': Memory.virtual_memory(),
                 'swap_memory': Memory.swap_memory(),
                 'cpu_times': Processor.cpu_times(),
