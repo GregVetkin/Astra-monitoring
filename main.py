@@ -25,6 +25,17 @@ class OperatingSystem:
         return time.time()
 
     @staticmethod
+    def system_up_time():
+        try:
+            with open('/proc/uptime', 'r') as f:
+                result = float(f.read().split()[0])
+            return result
+
+        except Exception:
+            return 0.0
+
+
+    @staticmethod
     def unix_time_to_str(timestamp, timeformat='%Y-%m-%d %H:%M:%S'):
         return datetime.datetime.fromtimestamp(timestamp).strftime(timeformat)
 
