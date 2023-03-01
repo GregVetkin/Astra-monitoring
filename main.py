@@ -27,31 +27,24 @@ def swap_memory():
     return dict_result
 
 
-def cpu_times(eachcore=True):
-    result = psutil.cpu_times(percpu=eachcore)
+def cpu_times():
+    dict_result = {}
+    result = psutil.cpu_times(percpu=True)
 
-    if eachcore:
-        dict_result = {}
-        for core_number, core_times in enumerate(result):
-            dict_result[f'Core {core_number}'] = dict(core_times._asdict())
-
-    else:
-        dict_result = dict(result._asdict())
+    for core_number, core_times in enumerate(result):
+        dict_result[f'Core {core_number}'] = dict(core_times._asdict())
 
     return dict_result
 
 
-def cpu_percent(eachcore=True, interval=None):
-    result = psutil.cpu_percent(interval=interval, percpu=eachcore)
+def cpu_percent():
+    dict_result = {}
+    result = psutil.cpu_percent(interval=None, percpu=True)
 
-    if eachcore:
-        dict_result = {}
-        for core_number, core_percent in enumerate(result):
-            dict_result[f'Core {core_number}'] = core_percent
-        return dict_result
+    for core_number, core_percent in enumerate(result):
+        dict_result[f'Core {core_number}'] = core_percent
 
-    else:
-        return result
+    return dict_result
 
 
 def cpu_count():
@@ -69,17 +62,12 @@ def cpu_stats():
     return dict_result
 
 
-def cpu_freq(eachcore=True):
-    result = psutil.cpu_freq(percpu=eachcore)
+def cpu_freq():
+    dict_result = {}
+    result = psutil.cpu_freq(percpu=True)
 
-    if eachcore:
-        dict_result = {}
-
-        for core_number, core_freq in enumerate(result):
-            dict_result[f'Core {core_number}'] = dict(core_freq._asdict())
-
-    else:
-        dict_result = dict(result._asdict())
+    for core_number, core_freq in enumerate(result):
+        dict_result[f'Core {core_number}'] = dict(core_freq._asdict())
 
     return dict_result
 
