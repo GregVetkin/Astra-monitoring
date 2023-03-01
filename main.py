@@ -1,11 +1,17 @@
+import os
+import sys
 import psutil
 import subprocess
+import hashlib
+import netifaces
+import datetime
+import multiprocessing
 
 
 class Virtual:
 
     @staticmethod
-    def vm_detect():
+    def vm_detect() -> bool:
         command = 'sudo systemd-detect-virt'
         process = subprocess.Popen([command], shell=True, stdout=subprocess.PIPE).wait()
         if process == 0:
@@ -146,21 +152,63 @@ class Processes:
         return result_dict
 
 
+class File:
+
+    @staticmethod
+    def file_size(file_path):
+        return os.path.getsize(file_path)
+
+    @staticmethod
+    def file_modification_time(file_path):
+        return os.path.getmtime(file_path)
+
+    @staticmethod
+    def file_creation_time(file_path):
+        return os.path.getctime(file_path)
+
+    @staticmethod
+    def file_accessed_time(file_path):
+        return os.path.getatime(file_path)
+
+    @staticmethod
+    def file_exists(file_path):
+        return os.path.exists(file_path)
+
+    @staticmethod
+    def hash_sha256(file_path):
+        with open(file_path, "rb") as f:
+            sha256 = hashlib.sha256()
+            while True:
+                data = f.read(8192)
+                if not data:
+                    break
+                sha256.update(data)
+            return sha256.hexdigest()
+
+    @staticmethod
+    def file_info(file_path):
+        return {'Size': File.file_size(file_path),
+                'Creation': File.file_creation_time(file_path),
+                'Modification': File.file_modification_time(file_path),
+                'Accessed': File.file_accessed_time(file_path),
+                'Hash': File.hash_sha256(file_path)}
+
+
 if __name__ == '__main__':
 
-    all_data = {}
-    all_data['vm_detect'] = Virtual.vm_detect()
-    all_data['virtual_memory'] = Memory.virtual_memory()
-    all_data['swap_memory'] = Memory.swap_memory()
-    all_data['cpu_times'] = Processor.cpu_times()
-    all_data['cpu_percent'] = Processor.cpu_percent()
-    all_data['cpu_count'] = Processor.cpu_count()
-    all_data['cpu_stats'] = Processor.cpu_stats()
-    all_data['cpu_freq'] = Processor.cpu_freq()
-    all_data['disks_info'] = Disk.disks_info()
-    all_data['disks_io'] = Disk.disks_io()
-    all_data['net_io_counters'] = Network.net_io_counters()
-    all_data['processes_info'] = Processes.processes_info()
+    all_data = {'vm_detect': Virtual.vm_detect(),
+                'virtual_memory': Memory.virtual_memory(),
+                'swap_memory': Memory.swap_memory(),
+                'cpu_times': Processor.cpu_times(),
+                'cpu_percent': Processor.cpu_percent(),
+                'cpu_count': Processor.cpu_count(),
+                'cpu_stats': Processor.cpu_stats(),
+                'cpu_freq': Processor.cpu_freq(),
+                'disks_info': Disk.disks_info(),
+                'disks_io': Disk.disks_io(),
+                'net_io_counters': Network.net_io_counters(),
+                'processes_info': Processes.processes_info()
+                }
 
     import json
     with open('all.json', 'w') as file:
